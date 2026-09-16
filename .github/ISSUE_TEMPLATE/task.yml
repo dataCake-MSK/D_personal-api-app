@@ -1,0 +1,31 @@
+name: 작업 (SRS)
+description: SRS 항목 1개에 대응하는 구현 작업
+title: "[SRS-000] "
+labels: ["type:feature"]
+body:
+  - type: input
+    id: trace
+    attributes:
+      label: 추적 ID
+      placeholder: "NB-001 → PRD-001 → SRS-010"
+    validations:
+      required: true
+  - type: textarea
+    id: scope
+    attributes:
+      label: 작업 내용
+    validations:
+      required: true
+  - type: textarea
+    id: ac
+    attributes:
+      label: 수용 기준 (AC)
+      description: 명확해야 loop-ready 라벨을 붙일 수 있음
+      value: |
+        - [ ]
+    validations:
+      required: true
+  - type: textarea
+    id: notes
+    attributes:
+      label: 메모 / 제약
