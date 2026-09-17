@@ -8,7 +8,7 @@
 | 요구사항 (NB → PRD → SRS) | [docs/requirements](docs/requirements) |
 | 아키텍처 (arc42, C4, ADR) | [docs/architecture](docs/architecture) |
 | UX (User Flow, Wireframe) | [docs/ux](docs/ux) |
-| 이슈 리포트 (진행 계획, 체계 검토) | [docs/issues](docs/issues) |
+| 리포트 (진행 계획, 체계·기술 검토) | [docs/reports](docs/reports) |
 | 일간 일지 | [docs/journal](docs/journal) |
 | 학습 노트 | [docs/learning](docs/learning) |
 
