@@ -24,5 +24,13 @@
 3. **기기 인증 코드 만료**: `gh auth login --web`은 코드 승인을 기다리는 동안 실행 중이어야 한다. 승인 전에 세션을 끝내면 코드가 무효가 돼 다시 받아야 했다.
 4. **자동 모드 권한 차단**: 사용자가 명시하지 않은 계정 권한 부여 명령은 auto mode가 막았다. 사용자가 직접 요청하자 실행됐다.
 
+## 훅(hook) 다루기 (2026-09-18)
+- 훅은 `.claude/settings.json`에 등록하고, **세션이 시작될 때 읽힌다.** 훅을 설치한 세션에는 적용되지 않으므로 재시작(또는 `/hooks`) 후에 확인한다.
+- Stop 훅은 Claude가 턴을 끝내려 할 때 실행된다. `{"decision":"block","reason":…}`을 출력하면 종료가 막히고 Claude가 그 이유를 받아 이어서 처리한다.
+- 입력 JSON의 `stop_hook_active`가 true면 그대로 통과시켜야 무한 반복을 피할 수 있다.
+- 훅 스크립트는 표준 입력으로 JSON을 받으므로, 터미널에서 `echo '{}' | node <스크립트>`로 미리 확인할 수 있다.
+- 설치한 세션에서는 auto mode가 훅 시험 실행을 "자기 수정"으로 보고 막을 수 있다. 재시작 후에는 막히지 않았다.
+
 ## 참고
 - Claude Code 문서: https://docs.claude.com/en/docs/claude-code
+- 훅: https://docs.claude.com/en/docs/claude-code/hooks

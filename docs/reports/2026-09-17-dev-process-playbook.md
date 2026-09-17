@@ -1,7 +1,7 @@
 # 리포트: AI 주도 1인 개발 관리 체계 플레이북 (타 프로젝트 차용용)
 
 - 작성: 2026-09-17
-- 상태: 확정(운영 중) — 단, Stop 훅은 실동작 미검증
+- 상태: 확정(운영 중). Stop 훅 동작 확인 2026-09-18
 - 범위: 이 저장소의 **관리·진행 방식만** 정리한다. 제품 내용(도메인, 기능)은 다루지 않는다.
 - 대상: Claude Code + GitHub로 1인(또는 소규모) 프로젝트를 운영하려는 다른 프로젝트
 
@@ -241,8 +241,18 @@ CLAUDE.md의 자동 형상관리와 머지 등급을 다시 적용해줘:
 ````
 
 ## 9. 결정 필요 사항 (이 저장소)
-- PR #13 머지 후 Stop 훅 실동작 확인 (세션 재시작 또는 `/hooks`)
 - 저장소 설정 "Automatically delete head branches" 사용 여부
+
+## 갱신 (2026-09-18) — Stop 훅 검증
+- 스크립트 단위 확인: 깨끗한 상태 → 통과(종료 0, 출력 없음) / 변경 있음 → `{"decision":"block","reason":…}` 출력 / `stop_hook_active: true` → 통과(무한 반복 방지)
+- 훅은 **세션 시작 시 읽히므로**, 설치한 세션에서는 적용되지 않는다. 설치 후 세션 재시작(또는 `/hooks`)이 필요하다.
+- 설치한 세션에서는 `auto mode`가 훅 스크립트 시험 실행을 "자기 수정"으로 차단할 수 있다. 재시작 뒤에는 차단되지 않았다.
+- 검증 명령
+```bash
+echo '{}' | node .claude/hooks/stop-vcs-check.js                      # 깨끗한 상태: 출력 없음
+printf x > .tmp && echo '{}' | node .claude/hooks/stop-vcs-check.js   # block JSON 출력
+echo '{"stop_hook_active":true}' | node .claude/hooks/stop-vcs-check.js  # 통과
+```
 
 ## 참고
 - 저장소 규칙: [CLAUDE.md](../../CLAUDE.md), 스킬: `.claude/skills/`
