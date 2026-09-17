@@ -7,4 +7,7 @@
 - 관련 이슈·PR·ADR 번호를 함께 적는다.
 
 ## 목록
-- (아직 없음)
+- [앱 기술 스택 기초 — Jest, Zustand, persist/AsyncStorage, TanStack Query](app-stack-basics.md)
+- [GitHub 활용 — gh, CI 워크플로, Secret scanning, 라벨, 마일스톤](github-project-management.md)
+- [요구사항·아키텍처 문서 읽는 법 — AC, arc42, C4, ADR](requirements-and-architecture-docs.md)
+- [Claude Code 원격 작업 환경 — Scratchpad, Remote Control, gh 설치 삽질](claude-code-remote-work.md)

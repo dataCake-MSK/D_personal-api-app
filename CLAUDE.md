@@ -16,7 +16,10 @@ Expo/React Native 기반 개인용 위젯 대시보드 앱. 1인 개발, **Publi
 ## Git 규칙
 - 브랜치: `feat/SRS-010-dashboard-store`, `fix/…`, `docs/…`, `chore/…`
 - 커밋: Conventional Commits, 한국어 설명 허용. 예: `feat(dashboard): 위젯 순서 변경 액션 추가 (SRS-010)`
-- 커밋·PR은 `commit` 스킬, 이슈 생성은 `issue` 스킬, 월간 일지는 `journal` 스킬, 학습 정리는 `learn` 스킬 사용.
+- 커밋·PR은 `commit` 스킬, 이슈 생성·이슈 리포트(`docs/issues/`)는 `issue` 스킬, 일간 일지(`docs/journal/YYYY-MM-DD.md`)는 `journal` 스킬, 학습 정리는 `learn` 스킬 사용.
+
+## 도식
+- 기본은 Mermaid(GitHub에서 바로 렌더링). 시퀀스·컴포넌트 등 표현력이 필요하면 PlantUML(```plantuml 블록) 사용 가능. PlantUML은 GitHub에서 코드로만 보이므로 핵심 그림은 Mermaid로도 제공.
 
 ## 보안 (Public 저장소)
 - API 키·토큰·개인 엔드포인트 URL을 코드·문서·테스트·커밋 메시지에 넣지 않는다. 앱 내 비밀 값은 `expo-secure-store`만 사용.
