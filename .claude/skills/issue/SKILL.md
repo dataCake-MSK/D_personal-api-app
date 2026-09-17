@@ -8,7 +8,7 @@ description: NB/SRS 문서 항목이나 대화 내용으로 GitHub 이슈를 생
 ## 모드
 - `srs <ID...|all>`: SRS 항목을 이슈로 등록
 - `nb "<내용>"`: 니즈를 `docs/requirements/NB.md`에 새 NB 항목으로 추가하고 `type:needs` 이슈 생성
-- `report`: 열린 이슈 현황 리포트 (마일스톤별 진행률, loop-ready 목록, 오래된 이슈)
+- `report [주제]`: 이슈 리포트 작성 (현황, 개발 진행 계획, 체계 검토 등) → `docs/issues/`에 저장
 
 ## srs 절차
 1. `docs/requirements/SRS.md`에서 대상 항목을 읽는다.
@@ -25,4 +25,8 @@ description: NB/SRS 문서 항목이나 대화 내용으로 GitHub 이슈를 생
 3. PRD 승격이 필요해 보이면 제안만 한다(PRD는 사람 중심 문서).
 
 ## report 절차
-- `gh issue list --state open --json number,title,labels,milestone,updatedAt --limit 200` 등으로 집계해 표로 보고. 요청 시 `docs/journal/`의 해당 월 일지에 반영.
+1. `gh issue list --state all --json number,title,state,labels,milestone,updatedAt --limit 200`, `gh pr list --state all ...`로 실제 현황을 조회한다.
+2. 필요 시 `docs/requirements/SRS.md`, `traceability.md`를 함께 읽어 의존성·진행률을 판단한다.
+3. `docs/issues/YYYY-MM-DD-<주제-kebab-case>.md`로 저장. 형식: 요약 → 현황(표) → 분석/계획 → 결정 필요 사항.
+4. 도식은 Mermaid 우선, 필요 시 PlantUML.
+5. `docs/issues/README.md` 목록 갱신 후 `commit` 스킬 규칙으로 커밋.
