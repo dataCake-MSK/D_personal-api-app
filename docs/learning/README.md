@@ -11,3 +11,5 @@
 - [GitHub 활용 — gh, CI 워크플로, Secret scanning, 라벨, 마일스톤](github-project-management.md)
 - [요구사항·아키텍처 문서 읽는 법 — AC, arc42, C4, ADR](requirements-and-architecture-docs.md)
 - [Claude Code 원격 작업 환경 — Scratchpad, Remote Control, gh 설치 삽질](claude-code-remote-work.md)
+- [Git 브랜치·PR·머지 기초와 이력 읽는 법](git-branch-merge-basics.md)
+- [Expo 스캐폴딩과 폰(Expo Go) 원격 미리보기](expo-go-remote-preview.md)
