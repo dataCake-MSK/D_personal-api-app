@@ -4,7 +4,7 @@
 
 | NB | PRD | SRS | Issue | PR | 상태 |
 |---|---|---|---|---|---|
-| NB-004 | PRD-005 | SRS-001 | #1 | - | todo |
+| NB-004 | PRD-005 | SRS-001 | #1 | #12 | done |
 | NB-004 | PRD-005 | SRS-002 | #2 | - | todo |
 | NB-001 | PRD-001 | SRS-010 | #3 | - | todo |
 | NB-001 | PRD-001 | SRS-011 | #4 | - | todo |

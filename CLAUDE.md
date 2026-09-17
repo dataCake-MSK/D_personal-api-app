@@ -25,9 +25,11 @@ Expo/React Native 기반 개인용 위젯 대시보드 앱. 1인 개발, **Publi
 - API 키·토큰·개인 엔드포인트 URL을 코드·문서·테스트·커밋 메시지에 넣지 않는다. 앱 내 비밀 값은 `expo-secure-store`만 사용.
 - `.env*`는 커밋 금지. 테스트는 공개 API 또는 목(mock) 사용.
 
-## 개발 명령 (SRS-001/002 이후 유효)
-- 실행: `npx expo start`
-- 검증: `npm run lint && npx tsc --noEmit && npm test`
+## 개발 명령
+- Expo SDK 57. API가 자주 바뀌므로 코드 작성 전 버전 문서 확인: https://docs.expo.dev/versions/v57.0.0/
+- 폰 미리보기: `npx expo start --tunnel --go`를 백그라운드로 실행. 사용자가 Expo Go에 같은 Expo 계정으로 로그인하면 개발 서버 목록에 표시됨. 주소는 `curl -s http://127.0.0.1:4040/api/tunnels`의 `public_url`(https → `exp://`로 바꿔 전달).
+- 타입 검사: `npx tsc --noEmit`
+- 검증(SRS-002 이후): `npm run lint && npx tsc --noEmit && npm test`
 
 ## 환경 메모
 - Windows. `gh`가 PATH에 없으면 `"C:\Program Files\GitHub CLI\gh.exe"` 사용.

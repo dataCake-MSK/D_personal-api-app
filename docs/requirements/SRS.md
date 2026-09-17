@@ -12,8 +12,8 @@
 - 추적: PRD-005 · 이슈: #1
 - 내용: Expo(TypeScript, expo-router) 프로젝트 생성, 폴더 구조 `src/` 정리.
 - AC:
-  - [ ] `npx expo start` 후 Expo Go에서 기본 화면 표시
-  - [ ] `npx tsc --noEmit` 통과
+  - [x] `npx expo start` 후 Expo Go에서 기본 화면 표시 (2026-09-17 실기기 확인, tunnel 접속)
+  - [x] `npx tsc --noEmit` 통과
 
 ### SRS-002 품질 도구 및 CI
 - 추적: PRD-005 · 이슈: #2
