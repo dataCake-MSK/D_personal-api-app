@@ -13,6 +13,8 @@ web-build/
 expo-env.d.ts
 
 # Native
+.kotlin/
+*.pem
 *.orig.*
 *.jks
 *.p8
@@ -26,9 +28,10 @@ ios/
 .metro-health-check*
 
 # Env
-.env
-.env.local
-.env.*.local
+.env*
+
+# Claude Code (개인 로컬 설정)
+.claude/settings.local.json
 
 # Logs
 *.log
