@@ -26,10 +26,10 @@
 
 ### SRS-010 대시보드 상태 저장소
 - 추적: PRD-001 · 이슈: #3
-- 내용: Zustand + persist(AsyncStorage). 대시보드 = `WidgetInstance[]`(id, type, config, order).
+- 내용: Zustand + persist(AsyncStorage). 대시보드 = `WidgetInstance[]`(id, type, config). **순서는 배열 순서를 단일 기준으로 삼는다**(별도 `order` 필드를 두면 배열과 어긋날 수 있어 제외).
 - AC:
-  - [ ] 추가/삭제/순서 변경 액션 단위 테스트
-  - [ ] 앱 재시작 후 구성 유지
+  - [x] 추가/삭제/순서 변경 액션 단위 테스트 (2026-09-18, 6개)
+  - [x] 앱 재시작 후 구성 유지 (2026-09-18, 저장→복원 테스트)
 
 ### SRS-011 대시보드 화면
 - 추적: PRD-001 · 이슈: #4
