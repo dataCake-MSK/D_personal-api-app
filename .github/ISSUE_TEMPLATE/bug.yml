@@ -1,7 +1,7 @@
 name: 버그
 description: 동작 오류 보고
-title: "[BUG] "
-labels: ["type:bug"]
+title: '[BUG] '
+labels: ['type:bug']
 body:
   - type: textarea
     id: what
@@ -25,4 +25,4 @@ body:
     id: env
     attributes:
       label: 환경
-      placeholder: "기기 / OS 버전 / 앱 버전 또는 커밋"
+      placeholder: '기기 / OS 버전 / 앱 버전 또는 커밋'

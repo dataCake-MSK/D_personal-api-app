@@ -1,7 +1,7 @@
 name: NB (니즈 덤프)
 description: 떠오른 니즈를 형식 없이 던져두기. 정제 후 PRD/SRS로 승격.
-title: "[NB] "
-labels: ["type:needs"]
+title: '[NB] '
+labels: ['type:needs']
 body:
   - type: textarea
     id: need
