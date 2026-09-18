@@ -64,9 +64,12 @@ const lastWork = Number(
   ) || 0,
 );
 if (lastWork) {
-  const lastJournal = Number(git(`log -1 --all --format=%ct -- "${journal}"`) || 0);
+  // 오늘 일지가 오늘 한 번이라도 커밋(또는 수정)됐으면 통과. 커밋마다 일지를 다시 쓰게 하지 않는다.
+  const journalToday = Number(
+    git(`log -1 --all --since="${today}T00:00:00" --format=%ct -- "${journal}"`) || 0,
+  );
   const journalDirty = dirty.some((l) => l.includes(journal));
-  if (lastJournal < lastWork && !journalDirty) {
+  if (!journalToday && !journalDirty) {
     problems.push(`오늘 커밋된 작업이 일간 일지(${journal})에 반영되지 않음`);
   }
 }
