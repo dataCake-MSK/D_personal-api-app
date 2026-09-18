@@ -13,7 +13,11 @@ if (input.stop_hook_active) process.exit(0);
 
 const git = (args) => {
   try {
-    return execSync(`git ${args}`, { cwd, encoding: 'utf8', stdio: ['ignore', 'pipe', 'ignore'] }).trim();
+    return execSync(`git ${args}`, {
+      cwd,
+      encoding: 'utf8',
+      stdio: ['ignore', 'pipe', 'ignore'],
+    }).trim();
   } catch {
     return null;
   }
@@ -25,7 +29,10 @@ const problems = [];
 
 const dirty = (git('status --porcelain') || '').split('\n').filter(Boolean);
 if (dirty.length) {
-  const shown = dirty.slice(0, 8).map((l) => `  ${l}`).join('\n');
+  const shown = dirty
+    .slice(0, 8)
+    .map((l) => `  ${l}`)
+    .join('\n');
   const more = dirty.length > 8 ? `\n  …외 ${dirty.length - 8}개` : '';
   problems.push(`커밋되지 않은 변경 ${dirty.length}개:\n${shown}${more}`);
 }
@@ -34,7 +41,10 @@ const branch = git('rev-parse --abbrev-ref HEAD');
 if (branch && branch !== 'HEAD') {
   if (branch === 'main') {
     const ahead = Number(git('rev-list --count origin/main..main') || 0);
-    if (ahead > 0) problems.push(`main에 push되지 않은 로컬 커밋 ${ahead}개 (main 직접 push 금지 → 브랜치로 옮겨 PR)`);
+    if (ahead > 0)
+      problems.push(
+        `main에 push되지 않은 로컬 커밋 ${ahead}개 (main 직접 push 금지 → 브랜치로 옮겨 PR)`,
+      );
   } else {
     const upstream = git('rev-parse --abbrev-ref --symbolic-full-name @{u}');
     const ahead = upstream
@@ -49,12 +59,17 @@ const pad = (n) => String(n).padStart(2, '0');
 const today = `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}`;
 const journal = `docs/journal/${today}.md`;
 const lastWork = Number(
-  git(`log -1 --all --no-merges --since="${today}T00:00:00" --format=%ct -- . ":(exclude)docs/journal"`) || 0,
+  git(
+    `log -1 --all --no-merges --since="${today}T00:00:00" --format=%ct -- . ":(exclude)docs/journal"`,
+  ) || 0,
 );
 if (lastWork) {
-  const lastJournal = Number(git(`log -1 --all --format=%ct -- "${journal}"`) || 0);
+  // 오늘 일지가 오늘 한 번이라도 커밋(또는 수정)됐으면 통과. 커밋마다 일지를 다시 쓰게 하지 않는다.
+  const journalToday = Number(
+    git(`log -1 --all --since="${today}T00:00:00" --format=%ct -- "${journal}"`) || 0,
+  );
   const journalDirty = dirty.some((l) => l.includes(journal));
-  if (lastJournal < lastWork && !journalDirty) {
+  if (!journalToday && !journalDirty) {
     problems.push(`오늘 커밋된 작업이 일간 일지(${journal})에 반영되지 않음`);
   }
 }

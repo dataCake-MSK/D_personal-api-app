@@ -19,8 +19,8 @@
 - 추적: PRD-005 · 이슈: #2
 - 내용: ESLint, Prettier, Jest + React Native Testing Library, GitHub Actions(lint → typecheck → test).
 - AC:
-  - [ ] `npm run lint`, `npm test` 로컬 통과
-  - [ ] PR에서 Actions 워크플로 성공
+  - [x] `npm run lint`, `npm test` 로컬 통과 (2026-09-18, `format:check`·`typecheck` 포함)
+  - [x] PR에서 Actions 워크플로 성공 (2026-09-18, PR #15에서 41초 통과)
 
 ## M1 — MVP
 

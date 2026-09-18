@@ -1,0 +1,8 @@
+node_modules/
+.expo/
+dist/
+package-lock.json
+
+# 문서는 사람이 읽는 형식을 유지한다 (표·도식 정렬 보존)
+docs/
+*.md
