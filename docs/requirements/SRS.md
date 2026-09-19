@@ -40,10 +40,11 @@
 
 ### SRS-012 위젯 레지스트리 + Text 위젯
 - 추적: PRD-005 · 이슈: #5
-- 내용: `WidgetDefinition { type, configSchema(zod), Renderer, ConfigEditor }` 레지스트리. 첫 위젯은 정적 Text.
+- 내용: `WidgetDefinition { type, label, configSchema(zod), Renderer }` 레지스트리. 첫 위젯은 정적 Text. **`ConfigEditor`는 설정 입력 화면을 만드는 SRS-011에서 추가한다.**
 - AC:
-  - [ ] 레지스트리에 없는 타입은 오류 카드로 안전하게 표시
-  - [ ] 잘못된 config는 zod 검증 실패 메시지 표시
+  - [x] 레지스트리에 없는 타입은 오류 카드로 안전하게 표시 (2026-09-18)
+  - [x] 잘못된 config는 zod 검증 실패 메시지 표시 (2026-09-18)
+  - [x] 한 위젯의 오류가 다른 위젯 렌더링을 막지 않음 (arc42 8장 반영)
 
 ### SRS-013 HTTP JSON 데이터 소스 + Text/Table 뷰
 - 추적: PRD-002, PRD-006 · 이슈: #6
