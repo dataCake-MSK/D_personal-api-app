@@ -52,8 +52,9 @@
 - 내용: TanStack Query로 GET 요청, **점 표기 경로**(`data.items[0].price`)로 값 추출, Text/Table 렌더러. 헤더에 `{{secret:NAME}}` 참조(SRS-016).
 - 테스트용 공개 API(D1): 인증 없는 JSON은 **Open-Meteo**(`https://api.open-meteo.com/v1/forecast?latitude=37.57&longitude=126.98&hourly=temperature_2m`), 인증 헤더·전송 확인은 **httpbin**(`https://httpbin.org/bearer`, `https://httpbin.org/post`). 단위 테스트는 실제 호출 없이 목 응답 사용.
 - AC:
-  - [ ] 로딩/오류/빈 데이터 상태 표시
-  - [ ] 추출 로직 단위 테스트
+  - [x] 로딩/오류/빈 데이터 상태 표시 (2026-09-20)
+  - [x] 추출 로직 단위 테스트 (2026-09-20, 경로·요청·표 변환 14개 + 위젯 7개)
+  - [ ] 실기기(Expo Go) 확인 — Open-Meteo 텍스트·테이블 표시
 
 ### SRS-014 TimeSeries 뷰
 - 추적: PRD-003 · 이슈: #7
