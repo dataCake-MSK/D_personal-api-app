@@ -14,9 +14,18 @@ export type WidgetInstanceLike = {
   config: unknown;
 };
 
+/** 설정 입력 UI가 받는 props. 값은 아직 검증 전이라 부분 입력 상태일 수 있다. */
+export type WidgetConfigEditorProps = {
+  value: Record<string, unknown>;
+  onChange: (next: Record<string, unknown>) => void;
+};
+
 export type WidgetDefinition<TConfig = unknown> = {
   type: string;
   label: string;
   configSchema: ZodType<TConfig>;
   Renderer: ComponentType<WidgetRendererProps<TConfig>>;
+  ConfigEditor: ComponentType<WidgetConfigEditorProps>;
+  /** 설정 입력 화면의 초기값 */
+  defaultConfig: Record<string, unknown>;
 };

@@ -26,6 +26,14 @@
 5. **백그라운드 실행 시 터미널에 주소·QR이 안 나온다.** ngrok 로컬 API(`http://127.0.0.1:4040/api/tunnels`)의 `public_url`로 주소를 얻는다.
 6. 로그인 전 주소는 `…-anonymous-8081.exp.direct`, 로그인 후는 `…-<계정>-8081.exp.direct`로 바뀌므로 서버 재시작 후엔 새 주소를 써야 한다.
 
+## 화면 테스트 주의점 (RNTL 14, 2026-09-20)
+- `render`뿐 아니라 **`fireEvent`도 Promise를 반환**한다. `await`을 빠뜨리면 버튼을 눌러도 화면이 갱신되기 전에 검증이 실행돼, 모달이 안 열린 것처럼 보인다.
+```tsx
+await render(<DashboardScreen />);
+await fireEvent.press(screen.getByText('+ 위젯 추가'));
+```
+- 화면 테스트는 "글자가 보이는가" 수준까지만 확인한다. 배치·터치감·실제 기기 동작은 Expo Go로 봐야 한다.
+
 ## 참고
 - Expo CLI (`--tunnel`): https://docs.expo.dev/more/expo-cli/
 - Expo Go: https://expo.dev/go
