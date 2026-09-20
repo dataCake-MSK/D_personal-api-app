@@ -1,5 +1,14 @@
 import { useState } from 'react';
-import { Modal, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import {
+  KeyboardAvoidingView,
+  Modal,
+  Platform,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
+} from 'react-native';
 
 import { listWidgetDefinitions } from '@/widgets';
 import type { WidgetDefinition } from '@/widgets';
@@ -42,13 +51,27 @@ export function AddWidgetModal({ visible, onClose, onSubmit }: Props) {
   };
 
   return (
-    <Modal visible={visible} animationType="slide" transparent onRequestClose={close}>
-      <View style={styles.backdrop}>
+    <Modal
+      visible={visible}
+      animationType="slide"
+      transparent
+      statusBarTranslucent
+      onRequestClose={close}
+    >
+      {/* 키보드가 올라오면 입력란과 버튼이 가리지 않도록 시트를 밀어 올린다 */}
+      <KeyboardAvoidingView
+        style={styles.backdrop}
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      >
         <View style={styles.sheet}>
           <Text style={styles.heading}>위젯 추가</Text>
 
           {definition ? (
-            <ScrollView contentContainerStyle={styles.body}>
+            <ScrollView
+              contentContainerStyle={styles.body}
+              keyboardShouldPersistTaps="handled"
+              keyboardDismissMode="on-drag"
+            >
               <Text style={styles.selectedType}>{definition.label}</Text>
               <definition.ConfigEditor value={config} onChange={setConfig} />
               {error ? <Text style={styles.error}>{error}</Text> : null}
@@ -78,7 +101,7 @@ export function AddWidgetModal({ visible, onClose, onSubmit }: Props) {
             ) : null}
           </View>
         </View>
-      </View>
+      </KeyboardAvoidingView>
     </Modal>
   );
 }
