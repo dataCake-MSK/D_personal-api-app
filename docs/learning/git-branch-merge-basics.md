@@ -50,6 +50,13 @@
 - 머지 커밋 작성자 `MrAutoFin` = GitHub 계정 `dataCake-MSK`의 표시 이름(GitHub 서버가 계정 명의로 생성). 일반 커밋 작성자 = 로컬 git 설정(`Minsung Kang`).
 - `Co-Authored-By: Claude …` = Claude와 공동 작성 표시, `Claude-Session` = 작업한 세션 링크.
 
+## 머지 충돌 (2026-09-19, PR #17)
+- **왜 생기나**: 두 PR이 같은 파일의 같은 위치를 각자 고치면, 먼저 머지된 쪽 이후 나중 PR이 "Conflicting"이 되어 GitHub 머지 버튼이 막힌다. 이번에는 #16(zustand)과 #17(zod)이 `package.json` 의존성 목록 끝에 각각 한 줄씩 추가했다.
+- **폰에서 보이는 모습**: PR 화면에 "This branch has conflicts that must be resolved"가 뜨고 머지할 수 없다. 이때는 "충돌 해결해줘"라고 요청하면 된다.
+- **해결 원리**: 작업 브랜치에 최신 main을 합친 뒤, 충돌 표시(`<<<<<<<`, `=======`, `>>>>>>>`) 사이에서 남길 내용을 고른다. 의존성은 둘 다 필요하므로 양쪽을 유지했다.
+- `package-lock.json`처럼 **자동 생성 파일은 손으로 고치지 않고** 한쪽을 기준으로 둔 뒤 도구(`npm install`)로 다시 만든다.
+- **예방**: 같은 파일을 건드릴 PR은 순서대로 머지하거나, 먼저 머지된 뒤에 다음 PR을 최신 main 기준으로 갱신한다.
+
 ## 폰에서 이력 확인
 | 알고 싶은 것 | 볼 곳 |
 |---|---|
