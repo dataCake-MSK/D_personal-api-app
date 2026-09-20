@@ -49,7 +49,8 @@
 
 ### SRS-013 HTTP JSON 데이터 소스 + Text/Table 뷰
 - 추적: PRD-002, PRD-006 · 이슈: #6
-- 내용: TanStack Query로 GET 요청, 경로 표현식으로 값 추출, Text/Table 렌더러. 헤더에 secure-store 키 참조.
+- 내용: TanStack Query로 GET 요청, **점 표기 경로**(`data.items[0].price`)로 값 추출, Text/Table 렌더러. 헤더에 `{{secret:NAME}}` 참조(SRS-016).
+- 테스트용 공개 API(D1): 인증 없는 JSON은 **Open-Meteo**(`https://api.open-meteo.com/v1/forecast?latitude=37.57&longitude=126.98&hourly=temperature_2m`), 인증 헤더·전송 확인은 **httpbin**(`https://httpbin.org/bearer`, `https://httpbin.org/post`). 단위 테스트는 실제 호출 없이 목 응답 사용.
 - AC:
   - [ ] 로딩/오류/빈 데이터 상태 표시
   - [ ] 추출 로직 단위 테스트
@@ -70,7 +71,8 @@
 
 ### SRS-016 API 키 관리 화면
 - 추적: PRD-006 · 이슈: #9
-- 내용: `expo-secure-store`에 이름-값 저장, 위젯 설정에서 `{{secret:NAME}}` 형식으로 참조.
+- 내용: `expo-secure-store`에 이름-값 저장, 위젯 설정에서 `{{secret:NAME}}` 형식으로 참조. 목록에는 **이름만** 보관하고 값은 보안 저장소에서만 읽는다.
 - AC:
-  - [ ] 키 값은 화면·로그·저장소(AsyncStorage)에 평문 노출되지 않음
-  - [ ] 치환 로직 단위 테스트
+  - [x] 키 값은 화면·로그·저장소(AsyncStorage)에 평문 노출되지 않음 (2026-09-20, 화면은 이름과 마스킹만 표시)
+  - [x] 치환 로직 단위 테스트 (2026-09-20, 10개)
+  - [ ] 실기기(Expo Go) 확인 — 저장·삭제·재시작 후 유지
