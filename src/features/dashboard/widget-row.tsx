@@ -8,17 +8,19 @@ type Props = {
   widget: WidgetInstance;
   index: number;
   total: number;
+  onEdit: () => void;
   onMoveUp: () => void;
   onMoveDown: () => void;
   onRemove: () => void;
 };
 
-export function WidgetRow({ widget, index, total, onMoveUp, onMoveDown, onRemove }: Props) {
+export function WidgetRow({ widget, index, total, onEdit, onMoveUp, onMoveDown, onRemove }: Props) {
   return (
     <View style={styles.row}>
       <WidgetCard widget={widget} />
 
       <View style={styles.controls}>
+        <Control label="수정" onPress={onEdit} />
         <Control label="위로" disabled={index === 0} onPress={onMoveUp} />
         <Control label="아래로" disabled={index === total - 1} onPress={onMoveDown} />
         <Control label="삭제" onPress={onRemove} destructive />

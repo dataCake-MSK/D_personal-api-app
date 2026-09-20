@@ -10,23 +10,31 @@ import {
   View,
 } from 'react-native';
 
-import { listWidgetDefinitions } from '@/widgets';
+import { getWidgetDefinition, listWidgetDefinitions } from '@/widgets';
 import type { WidgetDefinition } from '@/widgets';
 
 type Props = {
   visible: boolean;
+  /** 수정할 위젯. 없으면 새로 추가하는 화면으로 연다. */
+  editing?: { type: string; config: Record<string, unknown> } | null;
   onClose: () => void;
   onSubmit: (type: string, config: Record<string, unknown>) => void;
 };
 
-export function AddWidgetModal({ visible, onClose, onSubmit }: Props) {
-  const [definition, setDefinition] = useState<WidgetDefinition | null>(null);
-  const [config, setConfig] = useState<Record<string, unknown>>({});
+/**
+ * 열 때마다 새로 그려지도록 부모에서 `key`를 바꿔 준다.
+ * 수정으로 열리면 타입 선택을 건너뛰고 기존 설정으로 시작한다.
+ */
+export function WidgetFormModal({ visible, editing, onClose, onSubmit }: Props) {
+  const [definition, setDefinition] = useState<WidgetDefinition | null>(() =>
+    editing ? (getWidgetDefinition(editing.type) ?? null) : null,
+  );
+  const [config, setConfig] = useState<Record<string, unknown>>(() =>
+    editing ? { ...editing.config } : {},
+  );
   const [error, setError] = useState<string | null>(null);
 
   const close = () => {
-    setDefinition(null);
-    setConfig({});
     setError(null);
     onClose();
   };
@@ -64,7 +72,7 @@ export function AddWidgetModal({ visible, onClose, onSubmit }: Props) {
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       >
         <View style={styles.sheet}>
-          <Text style={styles.heading}>위젯 추가</Text>
+          <Text style={styles.heading}>{editing ? '위젯 수정' : '위젯 추가'}</Text>
 
           {definition ? (
             <ScrollView
@@ -96,7 +104,7 @@ export function AddWidgetModal({ visible, onClose, onSubmit }: Props) {
             </Pressable>
             {definition ? (
               <Pressable style={[styles.action, styles.primary]} onPress={submit}>
-                <Text style={styles.primaryLabel}>추가</Text>
+                <Text style={styles.primaryLabel}>{editing ? '저장' : '추가'}</Text>
               </Pressable>
             ) : null}
           </View>
