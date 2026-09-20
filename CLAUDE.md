@@ -52,8 +52,22 @@ Expo/React Native 기반 개인용 위젯 대시보드 앱. 1인 개발, **Publi
 - 기본은 Mermaid(GitHub에서 바로 렌더링). 시퀀스·컴포넌트 등 표현력이 필요하면 PlantUML(```plantuml 블록) 사용 가능. PlantUML은 GitHub에서 코드로만 보이므로 핵심 그림은 Mermaid로도 제공.
 
 ## 보안 (Public 저장소)
-- API 키·토큰·개인 엔드포인트 URL을 코드·문서·테스트·커밋 메시지에 넣지 않는다. 앱 내 비밀 값은 `expo-secure-store`만 사용.
-- `.env*`는 커밋 금지. 테스트는 공개 API 또는 목(mock) 사용.
+> 상세 근거와 위험 목록: [docs/reports/2026-09-20-security-guidelines.md](docs/reports/2026-09-20-security-guidelines.md)
+
+**커밋 전 항상 점검**
+- 키·토큰·비밀번호 문자열(`api[_-]?key`, `token`, `secret`, `Bearer `, `sk-`, `gho_`, `ghp_`), `.env*`, 인증서(`*.p8`, `*.p12`, `*.key`, `*.pem`) 포함 여부
+- 문서·일지·리포트·커밋 메시지에 개인 엔드포인트 URL·좌표·계정 정보가 없는지 (자리표시자나 공개 예시로 대체)
+- 테스트가 실제 키 없이 목(mock)으로 동작하는지
+
+**코드에서 지킬 것**
+- 비밀 값은 `expo-secure-store`에만 저장한다. 대시보드 구성(AsyncStorage)·앱 상태·로그에는 `{{secret:NAME}}` 참조만 둔다.
+- 치환한 실제 값은 요청 직전에만 사용하고, 화면 표시·오류 메시지·로그에 들어가지 않도록 가린다.
+- 사용자 입력 URL은 `https://`를 기본으로 하고 `http://`는 경고한다.
+- 의존성 추가 전 관리 상태(최근 갱신·사용량·대안)를 확인한다.
+
+**등급**
+- 인증·키 취급·권한·저장소 설정·CI 권한 변경은 🔴(착수 전 확인). 의존성 추가가 🟢라도 보안 관련이면 🔴로 올린다.
+- 키가 유출되면 커밋 정리보다 **키 폐기·재발급이 먼저**다.
 
 ## 개발 명령
 - Expo SDK 57. API가 자주 바뀌므로 코드 작성 전 버전 문서 확인: https://docs.expo.dev/versions/v57.0.0/
