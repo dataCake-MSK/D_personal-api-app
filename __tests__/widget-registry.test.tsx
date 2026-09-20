@@ -14,7 +14,7 @@ beforeEach(() => {
 
 describe('위젯 레지스트리', () => {
   it('기본 위젯이 등록된다', () => {
-    expect(listWidgetDefinitions().map((d) => d.type)).toEqual(['text']);
+    expect(listWidgetDefinitions().map((d) => d.type)).toEqual(['text', 'http-json']);
     expect(getWidgetDefinition('text')?.label).toBe('텍스트');
     expect(getWidgetDefinition('없는타입')).toBeUndefined();
   });
