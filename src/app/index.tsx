@@ -1,3 +1,4 @@
+import { Link } from 'expo-router';
 import { useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 
@@ -15,7 +16,12 @@ export default function DashboardScreen() {
   return (
     <View style={styles.container}>
       <ScrollView contentContainerStyle={styles.list}>
-        <Text style={styles.title}>내 대시보드</Text>
+        <View style={styles.header}>
+          <Text style={styles.title}>내 대시보드</Text>
+          <Link href="/secrets" style={styles.secretsLink}>
+            API 키 관리
+          </Link>
+        </View>
 
         {widgets.length === 0 ? (
           <Text style={styles.empty}>아직 위젯이 없습니다.</Text>
@@ -59,9 +65,18 @@ const styles = StyleSheet.create({
     padding: 16,
     gap: 16,
   },
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
   title: {
     fontSize: 24,
     fontWeight: '600',
+  },
+  secretsLink: {
+    fontSize: 14,
+    color: '#208aef',
   },
   empty: {
     fontSize: 16,
