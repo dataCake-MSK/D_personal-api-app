@@ -76,9 +76,11 @@ export function WidgetFormModal({ visible, editing, onClose, onSubmit }: Props) 
 
           {definition ? (
             <ScrollView
-              contentContainerStyle={styles.body}
+              contentContainerStyle={styles.scrollBody}
               keyboardShouldPersistTaps="handled"
               keyboardDismissMode="on-drag"
+              // 아래쪽 입력란도 키보드 위로 끌어올릴 수 있도록 여유 공간을 둔다.
+              automaticallyAdjustKeyboardInsets
             >
               <Text style={styles.selectedType}>{definition.label}</Text>
               <definition.ConfigEditor value={config} onChange={setConfig} />
@@ -126,7 +128,7 @@ const styles = StyleSheet.create({
     borderTopRightRadius: 16,
     padding: 20,
     gap: 16,
-    maxHeight: '80%',
+    maxHeight: '90%',
   },
   heading: {
     fontSize: 18,
@@ -134,6 +136,10 @@ const styles = StyleSheet.create({
   },
   body: {
     gap: 12,
+  },
+  scrollBody: {
+    gap: 12,
+    paddingBottom: 96,
   },
   selectedType: {
     fontSize: 14,
