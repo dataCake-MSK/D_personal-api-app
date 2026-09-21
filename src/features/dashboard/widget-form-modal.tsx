@@ -79,8 +79,6 @@ export function WidgetFormModal({ visible, editing, onClose, onSubmit }: Props) 
               contentContainerStyle={styles.scrollBody}
               keyboardShouldPersistTaps="handled"
               keyboardDismissMode="on-drag"
-              // 아래쪽 입력란도 키보드 위로 끌어올릴 수 있도록 여유 공간을 둔다.
-              automaticallyAdjustKeyboardInsets
             >
               <Text style={styles.selectedType}>{definition.label}</Text>
               <definition.ConfigEditor value={config} onChange={setConfig} />
