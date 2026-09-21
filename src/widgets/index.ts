@@ -1,3 +1,4 @@
+import { httpActionWidget } from './http-action/http-action-widget';
 import { httpJsonWidget } from './http-json/http-json-widget';
 import { registerWidget } from './registry';
 import { textWidget } from './text/text-widget';
@@ -6,6 +7,7 @@ import { textWidget } from './text/text-widget';
 export function registerBuiltInWidgets() {
   registerWidget(textWidget);
   registerWidget(httpJsonWidget);
+  registerWidget(httpActionWidget);
 }
 
 export { getWidgetDefinition, listWidgetDefinitions, registerWidget } from './registry';
