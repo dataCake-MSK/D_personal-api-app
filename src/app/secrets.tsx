@@ -1,3 +1,4 @@
+import { Link } from 'expo-router';
 import { useEffect, useState } from 'react';
 import {
   KeyboardAvoidingView,
@@ -56,7 +57,12 @@ export default function SecretsScreen() {
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
     >
       <ScrollView contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">
-        <Text style={styles.title}>API 키 관리</Text>
+        <View style={styles.header}>
+          <Text style={styles.title}>API 키 관리</Text>
+          <Link href="/" style={styles.backLink}>
+            ← 대시보드
+          </Link>
+        </View>
         <Text style={styles.description}>
           저장한 값은 기기 보안 저장소에만 있고 다시 볼 수 없습니다. 위젯 설정에서{' '}
           <Text style={styles.code}>{'{{secret:이름}}'}</Text> 으로 사용하세요.
@@ -113,7 +119,9 @@ export default function SecretsScreen() {
 const styles = StyleSheet.create({
   container: { flex: 1 },
   content: { padding: 16, gap: 12 },
+  header: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
   title: { fontSize: 22, fontWeight: '600' },
+  backLink: { fontSize: 14, color: '#208aef' },
   description: { fontSize: 13, color: '#555', lineHeight: 19 },
   code: { fontFamily: Platform.select({ ios: 'Menlo', default: 'monospace' }), fontSize: 12 },
   form: { gap: 6, marginTop: 8 },

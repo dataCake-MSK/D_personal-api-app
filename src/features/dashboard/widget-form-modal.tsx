@@ -76,7 +76,7 @@ export function WidgetFormModal({ visible, editing, onClose, onSubmit }: Props) 
 
           {definition ? (
             <ScrollView
-              contentContainerStyle={styles.body}
+              contentContainerStyle={styles.scrollBody}
               keyboardShouldPersistTaps="handled"
               keyboardDismissMode="on-drag"
             >
@@ -126,7 +126,7 @@ const styles = StyleSheet.create({
     borderTopRightRadius: 16,
     padding: 20,
     gap: 16,
-    maxHeight: '80%',
+    maxHeight: '90%',
   },
   heading: {
     fontSize: 18,
@@ -134,6 +134,10 @@ const styles = StyleSheet.create({
   },
   body: {
     gap: 12,
+  },
+  scrollBody: {
+    gap: 12,
+    paddingBottom: 96,
   },
   selectedType: {
     fontSize: 14,
