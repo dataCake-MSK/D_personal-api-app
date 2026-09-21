@@ -82,4 +82,56 @@ describe('<DashboardScreen />', () => {
       { text: '둘째' },
     ]);
   });
+
+  it('수정을 누르면 기존 설정이 채워진 채로 열린다', async () => {
+    await render(<DashboardScreen />);
+    await addTextWidget('원래 내용', '원래 제목');
+
+    await fireEvent.press(screen.getByText('수정'));
+
+    expect(screen.getByText('위젯 수정')).toBeTruthy();
+    expect(screen.getByPlaceholderText('예: 서버 상태').props.value).toBe('원래 제목');
+    expect(screen.getByPlaceholderText('표시할 문구').props.value).toBe('원래 내용');
+  });
+
+  it('수정한 설정이 화면과 저장소에 반영된다', async () => {
+    await render(<DashboardScreen />);
+    await addTextWidget('원래 내용', '원래 제목');
+    const { id } = useDashboardStore.getState().widgets[0];
+
+    await fireEvent.press(screen.getByText('수정'));
+    await fireEvent.changeText(screen.getByPlaceholderText('표시할 문구'), '바뀐 내용');
+    await fireEvent.press(screen.getByText('저장'));
+
+    expect(screen.getByText('바뀐 내용')).toBeTruthy();
+    expect(screen.queryByText('원래 내용')).toBeNull();
+    const widgets = useDashboardStore.getState().widgets;
+    expect(widgets).toHaveLength(1);
+    expect(widgets[0].id).toBe(id);
+    expect(widgets[0].config).toEqual({ title: '원래 제목', text: '바뀐 내용' });
+  });
+
+  it('수정 중 검증에 실패하면 저장되지 않는다', async () => {
+    await render(<DashboardScreen />);
+    await addTextWidget('원래 내용');
+
+    await fireEvent.press(screen.getByText('수정'));
+    await fireEvent.changeText(screen.getByPlaceholderText('표시할 문구'), '');
+    await fireEvent.press(screen.getByText('저장'));
+
+    expect(screen.getByText('위젯 수정')).toBeTruthy();
+    expect(useDashboardStore.getState().widgets[0].config).toEqual({ text: '원래 내용' });
+  });
+
+  it('수정 후 추가를 열면 타입 선택부터 시작한다', async () => {
+    await render(<DashboardScreen />);
+    await addTextWidget('내용');
+
+    await fireEvent.press(screen.getByText('수정'));
+    await fireEvent.press(screen.getByText('취소'));
+    await fireEvent.press(screen.getByText('+ 위젯 추가'));
+
+    expect(screen.getByText('위젯 추가')).toBeTruthy();
+    expect(screen.getByText('텍스트')).toBeTruthy();
+  });
 });

@@ -2,8 +2,8 @@ import { Link } from 'expo-router';
 import { useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 
-import { AddWidgetModal } from '@/features/dashboard/add-widget-modal';
 import { useDashboardStore } from '@/features/dashboard/store';
+import { WidgetFormModal } from '@/features/dashboard/widget-form-modal';
 import { WidgetRow } from '@/features/dashboard/widget-row';
 
 export default function DashboardScreen() {
@@ -11,7 +11,29 @@ export default function DashboardScreen() {
   const addWidget = useDashboardStore((state) => state.addWidget);
   const removeWidget = useDashboardStore((state) => state.removeWidget);
   const moveWidget = useDashboardStore((state) => state.moveWidget);
-  const [adding, setAdding] = useState(false);
+  const updateWidgetConfig = useDashboardStore((state) => state.updateWidgetConfig);
+  const [formOpen, setFormOpen] = useState(false);
+  const [editingId, setEditingId] = useState<string | null>(null);
+  // 열 때마다 모달을 새로 그려 이전 입력이 남지 않게 한다.
+  const [formKey, setFormKey] = useState(0);
+
+  const editing = editingId ? (widgets.find((widget) => widget.id === editingId) ?? null) : null;
+
+  const openForm = (widgetId: string | null) => {
+    setEditingId(widgetId);
+    setFormKey((key) => key + 1);
+    setFormOpen(true);
+  };
+
+  const closeForm = () => {
+    setFormOpen(false);
+    setEditingId(null);
+  };
+
+  const submitForm = (type: string, config: Record<string, unknown>) => {
+    if (editingId) updateWidgetConfig(editingId, config);
+    else addWidget(type, config);
+  };
 
   return (
     <View style={styles.container}>
@@ -32,6 +54,7 @@ export default function DashboardScreen() {
               widget={widget}
               index={index}
               total={widgets.length}
+              onEdit={() => openForm(widget.id)}
               onMoveUp={() => moveWidget(widget.id, 'up')}
               onMoveDown={() => moveWidget(widget.id, 'down')}
               onRemove={() => removeWidget(widget.id)}
@@ -42,16 +65,18 @@ export default function DashboardScreen() {
         <Pressable
           accessibilityRole="button"
           style={styles.addButton}
-          onPress={() => setAdding(true)}
+          onPress={() => openForm(null)}
         >
           <Text style={styles.addLabel}>+ 위젯 추가</Text>
         </Pressable>
       </ScrollView>
 
-      <AddWidgetModal
-        visible={adding}
-        onClose={() => setAdding(false)}
-        onSubmit={(type, config) => addWidget(type, config)}
+      <WidgetFormModal
+        key={formKey}
+        visible={formOpen}
+        editing={editing}
+        onClose={closeForm}
+        onSubmit={submitForm}
       />
     </View>
   );
