@@ -40,22 +40,29 @@ export function checkUrl(url: string): { ok: boolean; warning?: string; reason?:
  * 설정의 {{secret:NAME}}을 요청 직전에만 치환해 호출한다.
  * 실패 메시지에는 헤더·본문을 넣지 않는다(비밀 값 노출 방지).
  */
-export async function requestJson(config: HttpRequestConfig): Promise<unknown> {
+export async function sendRequest(config: HttpRequestConfig): Promise<Response> {
   const check = checkUrl(config.url);
   if (!check.ok) throw new HttpRequestError(check.reason ?? '주소를 확인하세요.');
 
   const resolved = await resolveSecrets(config);
+  const method = resolved.method ?? 'GET';
+  const hasBody = method !== 'GET' && resolved.body !== undefined && resolved.body !== '';
 
-  let response: Response;
   try {
-    response = await fetch(resolved.url, {
-      method: resolved.method ?? 'GET',
-      headers: resolved.headers,
-      body: resolved.body,
+    return await fetch(resolved.url, {
+      method,
+      headers: hasBody
+        ? { 'Content-Type': 'application/json', ...resolved.headers }
+        : resolved.headers,
+      body: hasBody ? resolved.body : undefined,
     });
   } catch {
     throw new HttpRequestError('요청을 보내지 못했습니다. 네트워크와 주소를 확인하세요.');
   }
+}
+
+export async function requestJson(config: HttpRequestConfig): Promise<unknown> {
+  const response = await sendRequest(config);
 
   if (!response.ok) {
     throw new HttpRequestError(`요청이 실패했습니다 (HTTP ${response.status})`, response.status);
@@ -66,4 +73,18 @@ export async function requestJson(config: HttpRequestConfig): Promise<unknown> {
   } catch {
     throw new HttpRequestError('응답을 JSON으로 읽지 못했습니다.', response.status);
   }
+}
+
+/**
+ * 전송 전용. 응답 본문은 돌려주지 않는다.
+ * 일부 서버가 요청 헤더를 그대로 되돌려 주므로(예: httpbin) 본문을 화면에 노출하지 않는다.
+ */
+export async function runAction(config: HttpRequestConfig): Promise<{ status: number }> {
+  const response = await sendRequest(config);
+
+  if (!response.ok) {
+    throw new HttpRequestError(`요청이 실패했습니다 (HTTP ${response.status})`, response.status);
+  }
+
+  return { status: response.status };
 }
