@@ -110,3 +110,47 @@ describe('API 데이터 위젯', () => {
     expect(fetchMock).not.toHaveBeenCalled();
   });
 });
+
+describe('시계열 표시', () => {
+  it('시간축 경로와 값 배열로 그래프를 그린다', async () => {
+    fetchMock.mockResolvedValue({
+      ok: true,
+      status: 200,
+      json: async () => ({
+        hourly: {
+          time: ['2026-09-20T00:00', '2026-09-20T01:00'],
+          temperature_2m: [21.4, 22.6],
+        },
+      }),
+    });
+
+    await renderWithQuery(
+      <WidgetCard
+        widget={widget({
+          url: 'https://example.com/data',
+          path: 'hourly.temperature_2m',
+          xPath: 'hourly.time',
+          view: 'timeseries',
+        })}
+      />,
+    );
+
+    expect(await screen.findByText('2개 · 최소 21.4 · 최대 22.6')).toBeTruthy();
+  });
+
+  it('숫자가 없으면 안내를 표시한다', async () => {
+    fetchMock.mockResolvedValue({
+      ok: true,
+      status: 200,
+      json: async () => ({ items: ['a', 'b'] }),
+    });
+
+    await renderWithQuery(
+      <WidgetCard
+        widget={widget({ url: 'https://example.com/data', path: 'items', view: 'timeseries' })}
+      />,
+    );
+
+    expect(await screen.findByText('그릴 수 있는 숫자 데이터가 없습니다.')).toBeTruthy();
+  });
+});
