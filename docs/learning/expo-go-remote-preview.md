@@ -34,6 +34,12 @@ await fireEvent.press(screen.getByText('+ 위젯 추가'));
 ```
 - 화면 테스트는 "글자가 보이는가" 수준까지만 확인한다. 배치·터치감·실제 기기 동작은 Expo Go로 봐야 한다.
 
+## 패키지 고를 때 (2026-09-22)
+- **Expo Go는 미리 포함된 네이티브 모듈만 쓸 수 있다.** 같은 기능이라도 커뮤니티 패키지(`react-native-linear-gradient`)가 아니라 Expo 패키지(`expo-linear-gradient`)를 설치해야 Expo Go에서 동작한다.
+- 차트 라이브러리처럼 다른 패키지에 의존하는 경우, 그 의존 패키지가 Expo Go 호환인지도 확인한다(`react-native-gifted-charts`는 두 gradient 패키지 중 설치된 쪽을 쓴다).
+- 설치는 `npx expo install`을 쓴다. SDK에 맞는 버전을 골라 준다. `npx expo install --check`로 어긋난 버전을 확인할 수 있다.
+- 일부 패키지는 최신 문법 그대로 배포되어 Jest가 읽지 못한다. 이때는 `transformIgnorePatterns`의 예외 목록에 추가하되, **jest-expo 기본 목록을 덮어쓰지 말고 이어받아** 수정한다.
+
 ## 참고
 - Expo CLI (`--tunnel`): https://docs.expo.dev/more/expo-cli/
 - Expo Go: https://expo.dev/go

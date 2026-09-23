@@ -7,6 +7,8 @@ import { getByPath } from '@/lib/json-path';
 
 import type { WidgetConfigEditorProps, WidgetDefinition, WidgetRendererProps } from '../types';
 
+import { TimeSeriesView } from './chart-view';
+import { toChartPoints } from './timeseries';
 import { TableValueView, TextValueView } from './views';
 
 export const httpJsonConfigSchema = z.object({
@@ -14,7 +16,12 @@ export const httpJsonConfigSchema = z.object({
   url: z.string().url(),
   /** 점 표기 경로. 예: hourly.temperature_2m[0] */
   path: z.string().optional(),
-  view: z.enum(['text', 'table']).default('text'),
+  view: z.enum(['text', 'table', 'timeseries']).default('text'),
+  /** 시계열: 시간축 값이 따로 있는 경우의 경로. 예: hourly.time */
+  xPath: z.string().optional(),
+  /** 시계열: 객체 배열일 때 쓸 필드 이름 */
+  xField: z.string().optional(),
+  yField: z.string().optional(),
   /** 예: { "Authorization": "Bearer {{secret:MY_TOKEN}}" } */
   headers: z.record(z.string(), z.string()).optional(),
 });
@@ -23,14 +30,15 @@ export type HttpJsonConfig = z.infer<typeof httpJsonConfigSchema>;
 
 function HttpJsonRenderer({ id, config }: WidgetRendererProps<HttpJsonConfig>) {
   const { data, error, isPending } = useQuery({
-    queryKey: ['http-json', id, config.url, config.path],
+    queryKey: ['http-json', id, config.url, config.path, config.xPath],
     // 경로에 값이 없을 수도 있으므로 undefined를 그대로 반환하지 않고 감싼다.
-    queryFn: async () => ({
-      value: getByPath(
-        await requestJson({ url: config.url, headers: config.headers }),
-        config.path,
-      ),
-    }),
+    queryFn: async () => {
+      const json = await requestJson({ url: config.url, headers: config.headers });
+      return {
+        value: getByPath(json, config.path),
+        xValues: config.xPath ? getByPath(json, config.xPath) : undefined,
+      };
+    },
   });
 
   const warning = checkUrl(config.url).warning;
@@ -48,6 +56,14 @@ function HttpJsonRenderer({ id, config }: WidgetRendererProps<HttpJsonConfig>) {
           <Text style={styles.status}>해당 경로에 데이터가 없습니다.</Text>
         ) : config.view === 'table' ? (
           <TableValueView value={data.value} />
+        ) : config.view === 'timeseries' ? (
+          <TimeSeriesView
+            points={toChartPoints(
+              data.value,
+              { xField: config.xField, yField: config.yField },
+              data.xValues,
+            )}
+          />
         ) : (
           <TextValueView value={data.value} />
         )
@@ -58,7 +74,8 @@ function HttpJsonRenderer({ id, config }: WidgetRendererProps<HttpJsonConfig>) {
 
 function HttpJsonConfigEditor({ value, onChange }: WidgetConfigEditorProps) {
   const text = (key: string) => (typeof value[key] === 'string' ? (value[key] as string) : '');
-  const view = value.view === 'table' ? 'table' : 'text';
+  const view =
+    value.view === 'table' ? 'table' : value.view === 'timeseries' ? 'timeseries' : 'text';
 
   return (
     <View style={styles.form}>
@@ -92,17 +109,51 @@ function HttpJsonConfigEditor({ value, onChange }: WidgetConfigEditorProps) {
 
       <Text style={styles.label}>표시 형식</Text>
       <View style={styles.viewToggle}>
-        {(['text', 'table'] as const).map((option) => (
+        {(['text', 'table', 'timeseries'] as const).map((option) => (
           <Text
             key={option}
             accessibilityRole="button"
             onPress={() => onChange({ ...value, view: option })}
             style={[styles.viewOption, view === option && styles.viewOptionSelected]}
           >
-            {option === 'text' ? '텍스트' : '테이블'}
+            {option === 'text' ? '텍스트' : option === 'table' ? '테이블' : '그래프'}
           </Text>
         ))}
       </View>
+
+      {view === 'timeseries' ? (
+        <>
+          <Text style={styles.label}>시간축 경로 (선택)</Text>
+          <TextInput
+            style={styles.input}
+            value={text('xPath')}
+            onChangeText={(xPath) => onChange({ ...value, xPath })}
+            autoCapitalize="none"
+            autoCorrect={false}
+            placeholder="예: hourly.time"
+          />
+
+          <Text style={styles.label}>값 필드 / 시간 필드 (객체 배열일 때)</Text>
+          <View style={styles.fieldRow}>
+            <TextInput
+              style={[styles.input, styles.fieldInput]}
+              value={text('yField')}
+              onChangeText={(yField) => onChange({ ...value, yField })}
+              autoCapitalize="none"
+              autoCorrect={false}
+              placeholder="예: price"
+            />
+            <TextInput
+              style={[styles.input, styles.fieldInput]}
+              value={text('xField')}
+              onChangeText={(xField) => onChange({ ...value, xField })}
+              autoCapitalize="none"
+              autoCorrect={false}
+              placeholder="예: date"
+            />
+          </View>
+        </>
+      ) : null}
 
       <Text style={styles.hint}>
         인증이 필요하면 헤더에 {'{{secret:이름}}'} 을 쓰세요. 값은 API 키 관리 화면에서 저장합니다.
@@ -136,6 +187,8 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   viewToggle: { flexDirection: 'row', gap: 8 },
+  fieldRow: { flexDirection: 'row', gap: 8 },
+  fieldInput: { flex: 1 },
   viewOption: {
     borderWidth: StyleSheet.hairlineWidth,
     borderColor: '#b0b0b0',
