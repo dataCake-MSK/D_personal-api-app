@@ -14,3 +14,11 @@
 | NB-003 | PRD-004, PRD-006 | SRS-015 | #8 | #29 | done |
 | NB-002, NB-003 | PRD-006 | SRS-016 | #9 | #23 | done |
 | NB-001 | PRD-001 | SRS-017 | #26 | #27 | done |
+| NB-008 | PRD-007 | SRS-019 | #36 | - | todo |
+| NB-009 | PRD-008 | SRS-020 | #37 | - | todo |
+| NB-010 | PRD-009 | SRS-023 | #40 | - | todo |
+| NB-011 | PRD-010 | SRS-021 | #38 | - | todo |
+| NB-012 | PRD-011 | SRS-022 | #39 | - | todo |
+| NB-013 | PRD-012 | SRS-024 | #41 | - | todo |
+| NB-007, NB-014 | PRD-013 | SRS-018 | #35 | - | todo |
+| NB-014 | PRD-013 | SRS-025 | #42 | - | todo |
