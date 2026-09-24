@@ -5,6 +5,7 @@ import { z } from 'zod';
 
 import { checkUrl, runAction } from '@/lib/http-request';
 
+import { HeadersEditor } from '../common/headers-editor';
 import type { WidgetConfigEditorProps, WidgetDefinition, WidgetRendererProps } from '../types';
 
 const METHODS = ['POST', 'PUT', 'PATCH', 'DELETE', 'GET'] as const;
@@ -145,9 +146,13 @@ function HttpActionConfigEditor({ value, onChange }: WidgetConfigEditorProps) {
         {confirm ? '☑' : '☐'} 보내기 전에 한 번 더 확인
       </Text>
 
+      <HeadersEditor
+        headers={value.headers as Record<string, string> | undefined}
+        onChange={(headers) => onChange({ ...value, headers })}
+      />
+
       <Text style={styles.hint}>
-        인증이 필요하면 헤더에 {'{{secret:이름}}'} 을 쓰세요. 응답 본문은 비밀 값이 섞일 수 있어
-        표시하지 않고 상태 코드만 보여줍니다.
+        응답 본문은 비밀 값이 섞일 수 있어 표시하지 않고 상태 코드만 보여줍니다.
       </Text>
     </View>
   );

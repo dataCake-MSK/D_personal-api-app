@@ -5,6 +5,7 @@ import { z } from 'zod';
 import { checkUrl, requestJson } from '@/lib/http-request';
 import { getByPath } from '@/lib/json-path';
 
+import { HeadersEditor } from '../common/headers-editor';
 import type { WidgetConfigEditorProps, WidgetDefinition, WidgetRendererProps } from '../types';
 
 import { TimeSeriesView } from './chart-view';
@@ -155,9 +156,10 @@ function HttpJsonConfigEditor({ value, onChange }: WidgetConfigEditorProps) {
         </>
       ) : null}
 
-      <Text style={styles.hint}>
-        인증이 필요하면 헤더에 {'{{secret:이름}}'} 을 쓰세요. 값은 API 키 관리 화면에서 저장합니다.
-      </Text>
+      <HeadersEditor
+        headers={value.headers as Record<string, string> | undefined}
+        onChange={(headers) => onChange({ ...value, headers })}
+      />
     </View>
   );
 }
