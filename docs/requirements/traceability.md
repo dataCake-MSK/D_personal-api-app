@@ -20,5 +20,5 @@
 | NB-011 | PRD-010 | SRS-021 | #38 | - | todo |
 | NB-012 | PRD-011 | SRS-022 | #39 | - | todo |
 | NB-013 | PRD-012 | SRS-024 | #41 | - | todo |
-| NB-007, NB-014 | PRD-013 | SRS-018 | #35 | #44 | in-progress |
+| NB-007, NB-014 | PRD-013 | SRS-018 | #35 | #44 | done |
 | NB-014 | PRD-013 | SRS-025 | #42 | - | todo |
