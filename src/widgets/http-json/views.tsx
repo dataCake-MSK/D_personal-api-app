@@ -1,12 +1,28 @@
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
 
+import { DisplayText } from '../common/display-text';
+import {
+  DEFAULT_TEXT_DISPLAY,
+  scaledFontSize,
+  type TextDisplayConfig,
+} from '../common/text-display';
+
 const MAX_ROWS = 20;
 
-export function TextValueView({ value }: { value: unknown }) {
-  return <Text style={styles.value}>{formatValue(value)}</Text>;
+type ViewProps = {
+  value: unknown;
+  display?: TextDisplayConfig;
+};
+
+export function TextValueView({ value, display = DEFAULT_TEXT_DISPLAY }: ViewProps) {
+  return (
+    <DisplayText display={display} baseSize={18}>
+      {formatValue(value)}
+    </DisplayText>
+  );
 }
 
-export function TableValueView({ value }: { value: unknown }) {
+export function TableValueView({ value, display = DEFAULT_TEXT_DISPLAY }: ViewProps) {
   const rows = toRows(value);
 
   if (rows.length === 0) {
@@ -15,13 +31,16 @@ export function TableValueView({ value }: { value: unknown }) {
 
   const columns = [...new Set(rows.flatMap((row) => Object.keys(row)))];
   const shown = rows.slice(0, MAX_ROWS);
+  const cellSize = { fontSize: scaledFontSize(13, display.fontScale) };
+  // 표 안에서는 줄 수 제한만 반영한다(칸마다 가로 스크롤을 두면 표가 읽기 어려움).
+  const cellLines = display.wrap ? (display.maxLines > 0 ? display.maxLines : 1) : 1;
 
   return (
     <ScrollView horizontal showsHorizontalScrollIndicator={false}>
       <View>
         <View style={[styles.row, styles.headerRow]}>
           {columns.map((column) => (
-            <Text key={column} style={[styles.cell, styles.headerCell]} numberOfLines={1}>
+            <Text key={column} style={[styles.cell, cellSize, styles.headerCell]} numberOfLines={1}>
               {column}
             </Text>
           ))}
@@ -30,7 +49,7 @@ export function TableValueView({ value }: { value: unknown }) {
         {shown.map((row, index) => (
           <View key={index} style={styles.row}>
             {columns.map((column) => (
-              <Text key={column} style={styles.cell} numberOfLines={1}>
+              <Text key={column} style={[styles.cell, cellSize]} numberOfLines={cellLines}>
                 {formatValue(row[column])}
               </Text>
             ))}
@@ -66,11 +85,10 @@ export function formatValue(value: unknown): string {
 }
 
 const styles = StyleSheet.create({
-  value: { fontSize: 18 },
   empty: { fontSize: 14, color: '#666' },
   row: { flexDirection: 'row' },
   headerRow: { borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: '#c0c0c0' },
-  cell: { minWidth: 90, maxWidth: 160, paddingVertical: 4, paddingRight: 12, fontSize: 13 },
+  cell: { minWidth: 90, maxWidth: 160, paddingVertical: 4, paddingRight: 12 },
   headerCell: { fontWeight: '600', color: '#555' },
   more: { fontSize: 12, color: '#888', paddingTop: 4 },
 });

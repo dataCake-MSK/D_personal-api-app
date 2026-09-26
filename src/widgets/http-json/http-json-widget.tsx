@@ -6,13 +6,15 @@ import { checkUrl, requestJson } from '@/lib/http-request';
 import { getByPath } from '@/lib/json-path';
 
 import { HeadersEditor } from '../common/headers-editor';
+import { resolveTextDisplay, textDisplaySchema } from '../common/text-display';
+import { TextDisplayEditor } from '../common/text-display-editor';
 import type { WidgetConfigEditorProps, WidgetDefinition, WidgetRendererProps } from '../types';
 
 import { TimeSeriesView } from './chart-view';
 import { toChartPoints } from './timeseries';
 import { TableValueView, TextValueView } from './views';
 
-export const httpJsonConfigSchema = z.object({
+export const httpJsonConfigSchema = textDisplaySchema.extend({
   title: z.string().min(1).optional(),
   url: z.string().url(),
   /** 점 표기 경로. 예: hourly.temperature_2m[0] */
@@ -43,6 +45,7 @@ function HttpJsonRenderer({ id, config }: WidgetRendererProps<HttpJsonConfig>) {
   });
 
   const warning = checkUrl(config.url).warning;
+  const display = resolveTextDisplay(config);
 
   return (
     <>
@@ -56,7 +59,7 @@ function HttpJsonRenderer({ id, config }: WidgetRendererProps<HttpJsonConfig>) {
         data.value === undefined ? (
           <Text style={styles.status}>해당 경로에 데이터가 없습니다.</Text>
         ) : config.view === 'table' ? (
-          <TableValueView value={data.value} />
+          <TableValueView value={data.value} display={display} />
         ) : config.view === 'timeseries' ? (
           <TimeSeriesView
             points={toChartPoints(
@@ -66,7 +69,7 @@ function HttpJsonRenderer({ id, config }: WidgetRendererProps<HttpJsonConfig>) {
             )}
           />
         ) : (
-          <TextValueView value={data.value} />
+          <TextValueView value={data.value} display={display} />
         )
       ) : null}
     </>
@@ -155,6 +158,8 @@ function HttpJsonConfigEditor({ value, onChange }: WidgetConfigEditorProps) {
           </View>
         </>
       ) : null}
+
+      {view !== 'timeseries' ? <TextDisplayEditor value={value} onChange={onChange} /> : null}
 
       <HeadersEditor
         headers={value.headers as Record<string, string> | undefined}
