@@ -48,7 +48,7 @@ describe('<DashboardScreen />', () => {
     await fireEvent.press(screen.getByText('추가'));
 
     expect(useDashboardStore.getState().widgets).toHaveLength(0);
-    expect(screen.getByText(/자|문자|최소|at least|Too small/i)).toBeTruthy();
+    expect(screen.getByText(/Too small/i)).toBeTruthy();
   });
 
   it('위젯을 삭제하면 화면과 저장소에서 사라진다', async () => {
