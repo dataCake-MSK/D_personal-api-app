@@ -128,3 +128,32 @@ describe('<TextDisplayEditor />', () => {
     expect(screen.getByText('미리보기').props.numberOfLines).toBe(20);
   });
 });
+
+describe('가로 스크롤 표시', () => {
+  it('가로 스크롤을 고르면 스크롤바가 보인다', async () => {
+    await render(
+      <DisplayText
+        display={{ ...DEFAULT_TEXT_DISPLAY, wrap: false, overflow: 'scroll' }}
+        baseSize={16}
+        testID="scroll-text"
+      >
+        아주 긴 한 줄 내용
+      </DisplayText>,
+    );
+
+    const scroll = screen.getByTestId('scroll-text');
+    expect(scroll.props.horizontal).toBe(true);
+    expect(scroll.props.showsHorizontalScrollIndicator).toBe(true);
+    expect(scroll.props.persistentScrollbar).toBe(true);
+  });
+
+  it('말줄임을 고르면 스크롤 컨테이너를 쓰지 않는다', async () => {
+    await render(
+      <DisplayText display={{ ...DEFAULT_TEXT_DISPLAY, wrap: false }} baseSize={16} testID="plain">
+        내용
+      </DisplayText>,
+    );
+
+    expect(screen.getByTestId('plain').props.numberOfLines).toBe(1);
+  });
+});

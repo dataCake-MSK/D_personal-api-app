@@ -1,6 +1,6 @@
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
 
-import { DisplayText } from '../common/display-text';
+import { DisplayText, horizontalScrollBarProps } from '../common/display-text';
 import {
   DEFAULT_TEXT_DISPLAY,
   scaledFontSize,
@@ -36,7 +36,7 @@ export function TableValueView({ value, display = DEFAULT_TEXT_DISPLAY }: ViewPr
   const cellLines = display.wrap ? (display.maxLines > 0 ? display.maxLines : 1) : 1;
 
   return (
-    <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+    <ScrollView horizontal {...horizontalScrollBarProps}>
       <View>
         <View style={[styles.row, styles.headerRow]}>
           {columns.map((column) => (
