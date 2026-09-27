@@ -7,6 +7,13 @@ import { getByPath } from '@/lib/json-path';
 
 import { HeadersEditor } from '../common/headers-editor';
 import { formatRelativeTime } from '../common/relative-time';
+import {
+  REFRESH_INTERVAL_LABELS,
+  REFRESH_INTERVALS,
+  refreshIntervalSchema,
+  resolveRefreshSeconds,
+  toRefetchInterval,
+} from '../common/refresh-interval';
 import { resolveTextDisplay, textDisplaySchema } from '../common/text-display';
 import { TextDisplayEditor } from '../common/text-display-editor';
 import type { WidgetConfigEditorProps, WidgetDefinition, WidgetRendererProps } from '../types';
@@ -15,7 +22,7 @@ import { TimeSeriesView } from './chart-view';
 import { toChartPoints } from './timeseries';
 import { TableValueView, TextValueView } from './views';
 
-export const httpJsonConfigSchema = textDisplaySchema.extend({
+export const httpJsonConfigSchema = textDisplaySchema.extend(refreshIntervalSchema.shape).extend({
   title: z.string().min(1).optional(),
   url: z.string().url(),
   /** 점 표기 경로. 예: hourly.temperature_2m[0] */
@@ -33,8 +40,10 @@ export const httpJsonConfigSchema = textDisplaySchema.extend({
 export type HttpJsonConfig = z.infer<typeof httpJsonConfigSchema>;
 
 function HttpJsonRenderer({ id, config }: WidgetRendererProps<HttpJsonConfig>) {
+  const refreshSeconds = resolveRefreshSeconds(config);
   const { data, error, isPending, isFetching, dataUpdatedAt, refetch } = useQuery({
     queryKey: ['http-json', id, config.url, config.path, config.xPath],
+    refetchInterval: toRefetchInterval(refreshSeconds),
     // 경로에 값이 없을 수도 있으므로 undefined를 그대로 반환하지 않고 감싼다.
     queryFn: async () => {
       const json = await requestJson({ url: config.url, headers: config.headers });
@@ -77,7 +86,14 @@ function HttpJsonRenderer({ id, config }: WidgetRendererProps<HttpJsonConfig>) {
 
       <View style={styles.footer}>
         <Text style={styles.updatedAt}>
-          {isFetching ? '갱신 중…' : updatedAt ? `${updatedAt} 갱신` : ''}
+          {isFetching
+            ? '갱신 중…'
+            : [
+                updatedAt ? `${updatedAt} 갱신` : null,
+                refreshSeconds > 0 ? `${REFRESH_INTERVAL_LABELS[refreshSeconds]}마다` : null,
+              ]
+                .filter(Boolean)
+                .join(' · ')}
         </Text>
         <Pressable
           accessibilityRole="button"
@@ -175,6 +191,21 @@ function HttpJsonConfigEditor({ value, onChange }: WidgetConfigEditorProps) {
         </>
       ) : null}
 
+      <Text style={styles.label}>자동 갱신</Text>
+      <View style={styles.chips}>
+        {REFRESH_INTERVALS.map((seconds) => (
+          <Text
+            key={seconds}
+            accessibilityRole="button"
+            onPress={() => onChange({ ...value, refreshSeconds: seconds })}
+            style={[styles.chip, resolveRefreshSeconds(value) === seconds && styles.chipSelected]}
+          >
+            {REFRESH_INTERVAL_LABELS[seconds]}
+          </Text>
+        ))}
+      </View>
+      <Text style={styles.hint}>화면을 보고 있는 동안만 갱신됩니다.</Text>
+
       {view !== 'timeseries' ? <TextDisplayEditor value={value} onChange={onChange} /> : null}
 
       <HeadersEditor
@@ -205,6 +236,17 @@ const styles = StyleSheet.create({
   updatedAt: { fontSize: 11, color: '#999' },
   refresh: { fontSize: 12, color: '#208aef' },
   refreshDisabled: { color: '#9dc7ef' },
+  chips: { flexDirection: 'row', flexWrap: 'wrap', gap: 6 },
+  chip: {
+    borderWidth: StyleSheet.hairlineWidth,
+    borderColor: '#b0b0b0',
+    borderRadius: 8,
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    fontSize: 14,
+    color: '#333',
+  },
+  chipSelected: { borderColor: '#208aef', color: '#208aef', fontWeight: '600' },
   status: { fontSize: 14, color: '#666' },
   error: { fontSize: 13, color: '#a32f2b' },
   warning: { fontSize: 12, color: '#8a6d1f', marginBottom: 4 },
