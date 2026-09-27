@@ -6,7 +6,7 @@ import { checkUrl, requestJson } from '@/lib/http-request';
 import { getByPath } from '@/lib/json-path';
 
 import { HeadersEditor } from '../common/headers-editor';
-import { formatRelativeTime } from '../common/relative-time';
+import { buildStatusText } from '../common/status-text';
 import {
   REFRESH_INTERVAL_LABELS,
   REFRESH_INTERVALS,
@@ -16,6 +16,7 @@ import {
 } from '../common/refresh-interval';
 import { resolveTextDisplay, textDisplaySchema } from '../common/text-display';
 import { TextDisplayEditor } from '../common/text-display-editor';
+import { useNow } from '../common/use-now';
 import type { WidgetConfigEditorProps, WidgetDefinition, WidgetRendererProps } from '../types';
 
 import { TimeSeriesView } from './chart-view';
@@ -56,7 +57,14 @@ function HttpJsonRenderer({ id, config }: WidgetRendererProps<HttpJsonConfig>) {
 
   const warning = checkUrl(config.url).warning;
   const display = resolveTextDisplay(config);
-  const updatedAt = formatRelativeTime(dataUpdatedAt);
+  // 30초마다 바뀌는 현재 시각을 써서 "○분 전" 표시가 멈추지 않게 한다.
+  const now = useNow();
+  const statusText = buildStatusText({
+    updatedAt: dataUpdatedAt,
+    refreshSeconds,
+    isFetching,
+    now,
+  });
 
   return (
     <>
@@ -85,16 +93,7 @@ function HttpJsonRenderer({ id, config }: WidgetRendererProps<HttpJsonConfig>) {
       ) : null}
 
       <View style={styles.footer}>
-        <Text style={styles.updatedAt}>
-          {isFetching
-            ? '갱신 중…'
-            : [
-                updatedAt ? `${updatedAt} 갱신` : null,
-                refreshSeconds > 0 ? `${REFRESH_INTERVAL_LABELS[refreshSeconds]}마다` : null,
-              ]
-                .filter(Boolean)
-                .join(' · ')}
-        </Text>
+        <Text style={styles.updatedAt}>{statusText}</Text>
         <Pressable
           accessibilityRole="button"
           accessibilityLabel="새로고침"
