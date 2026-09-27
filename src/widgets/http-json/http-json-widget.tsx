@@ -1,11 +1,12 @@
 import { useQuery } from '@tanstack/react-query';
-import { StyleSheet, Text, TextInput, View } from 'react-native';
+import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 import { z } from 'zod';
 
 import { checkUrl, requestJson } from '@/lib/http-request';
 import { getByPath } from '@/lib/json-path';
 
 import { HeadersEditor } from '../common/headers-editor';
+import { formatRelativeTime } from '../common/relative-time';
 import { resolveTextDisplay, textDisplaySchema } from '../common/text-display';
 import { TextDisplayEditor } from '../common/text-display-editor';
 import type { WidgetConfigEditorProps, WidgetDefinition, WidgetRendererProps } from '../types';
@@ -32,7 +33,7 @@ export const httpJsonConfigSchema = textDisplaySchema.extend({
 export type HttpJsonConfig = z.infer<typeof httpJsonConfigSchema>;
 
 function HttpJsonRenderer({ id, config }: WidgetRendererProps<HttpJsonConfig>) {
-  const { data, error, isPending } = useQuery({
+  const { data, error, isPending, isFetching, dataUpdatedAt, refetch } = useQuery({
     queryKey: ['http-json', id, config.url, config.path, config.xPath],
     // 경로에 값이 없을 수도 있으므로 undefined를 그대로 반환하지 않고 감싼다.
     queryFn: async () => {
@@ -46,6 +47,7 @@ function HttpJsonRenderer({ id, config }: WidgetRendererProps<HttpJsonConfig>) {
 
   const warning = checkUrl(config.url).warning;
   const display = resolveTextDisplay(config);
+  const updatedAt = formatRelativeTime(dataUpdatedAt);
 
   return (
     <>
@@ -72,6 +74,20 @@ function HttpJsonRenderer({ id, config }: WidgetRendererProps<HttpJsonConfig>) {
           <TextValueView value={data.value} display={display} />
         )
       ) : null}
+
+      <View style={styles.footer}>
+        <Text style={styles.updatedAt}>
+          {isFetching ? '갱신 중…' : updatedAt ? `${updatedAt} 갱신` : ''}
+        </Text>
+        <Pressable
+          accessibilityRole="button"
+          accessibilityLabel="새로고침"
+          disabled={isFetching}
+          onPress={() => refetch()}
+        >
+          <Text style={[styles.refresh, isFetching && styles.refreshDisabled]}>새로고침</Text>
+        </Pressable>
+      </View>
     </>
   );
 }
@@ -180,6 +196,15 @@ export const httpJsonWidget: WidgetDefinition<HttpJsonConfig> = {
 
 const styles = StyleSheet.create({
   title: { fontSize: 14, fontWeight: '600', marginBottom: 4 },
+  footer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginTop: 8,
+  },
+  updatedAt: { fontSize: 11, color: '#999' },
+  refresh: { fontSize: 12, color: '#208aef' },
+  refreshDisabled: { color: '#9dc7ef' },
   status: { fontSize: 14, color: '#666' },
   error: { fontSize: 13, color: '#a32f2b' },
   warning: { fontSize: 12, color: '#8a6d1f', marginBottom: 4 },
