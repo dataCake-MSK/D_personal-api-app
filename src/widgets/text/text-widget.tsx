@@ -1,9 +1,12 @@
 import { StyleSheet, Text, TextInput, View } from 'react-native';
 import { z } from 'zod';
 
+import { DisplayText } from '../common/display-text';
+import { resolveTextDisplay, textDisplaySchema } from '../common/text-display';
+import { TextDisplayEditor } from '../common/text-display-editor';
 import type { WidgetConfigEditorProps, WidgetDefinition, WidgetRendererProps } from '../types';
 
-export const textWidgetConfigSchema = z.object({
+export const textWidgetConfigSchema = textDisplaySchema.extend({
   title: z.string().min(1).optional(),
   text: z.string().min(1),
 });
@@ -11,10 +14,18 @@ export const textWidgetConfigSchema = z.object({
 export type TextWidgetConfig = z.infer<typeof textWidgetConfigSchema>;
 
 function TextWidgetRenderer({ config }: WidgetRendererProps<TextWidgetConfig>) {
+  const display = resolveTextDisplay(config);
+
   return (
     <>
-      {config.title ? <Text style={styles.title}>{config.title}</Text> : null}
-      <Text style={styles.text}>{config.text}</Text>
+      {config.title ? (
+        <DisplayText display={display} baseSize={14} style={styles.title}>
+          {config.title}
+        </DisplayText>
+      ) : null}
+      <DisplayText display={display} baseSize={16}>
+        {config.text}
+      </DisplayText>
     </>
   );
 }
@@ -37,6 +48,8 @@ function TextWidgetConfigEditor({ value, onChange }: WidgetConfigEditorProps) {
         onChangeText={(text) => onChange({ ...value, text })}
         placeholder="표시할 문구"
       />
+
+      <TextDisplayEditor value={value} onChange={onChange} />
     </View>
   );
 }
@@ -52,12 +65,8 @@ export const textWidget: WidgetDefinition<TextWidgetConfig> = {
 
 const styles = StyleSheet.create({
   title: {
-    fontSize: 14,
     fontWeight: '600',
     marginBottom: 4,
-  },
-  text: {
-    fontSize: 16,
   },
   form: {
     gap: 6,
