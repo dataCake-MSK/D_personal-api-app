@@ -1,5 +1,5 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { render, screen } from '@testing-library/react-native';
+import { fireEvent, render, screen } from '@testing-library/react-native';
 import type { ReactElement } from 'react';
 
 import { clearWidgetRegistry } from '@/widgets/registry';
@@ -152,5 +152,33 @@ describe('시계열 표시', () => {
     );
 
     expect(await screen.findByText('그릴 수 있는 숫자 데이터가 없습니다.')).toBeTruthy();
+  });
+});
+
+describe('새로고침', () => {
+  it('새로고침을 누르면 같은 설정에서도 다시 요청한다', async () => {
+    fetchMock.mockResolvedValue({ ok: true, status: 200, json: async () => ({ v: 1 }) });
+
+    await renderWithQuery(
+      <WidgetCard widget={widget({ url: 'https://example.com/data', path: 'v', view: 'text' })} />,
+    );
+    expect(await screen.findByText('1')).toBeTruthy();
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+
+    fetchMock.mockResolvedValue({ ok: true, status: 200, json: async () => ({ v: 2 }) });
+    await fireEvent.press(screen.getByLabelText('새로고침'));
+
+    expect(await screen.findByText('2')).toBeTruthy();
+    expect(fetchMock).toHaveBeenCalledTimes(2);
+  });
+
+  it('불러온 뒤 갱신 시각을 표시한다', async () => {
+    fetchMock.mockResolvedValue({ ok: true, status: 200, json: async () => ({ v: 1 }) });
+
+    await renderWithQuery(
+      <WidgetCard widget={widget({ url: 'https://example.com/data', path: 'v', view: 'text' })} />,
+    );
+
+    expect(await screen.findByText('방금 갱신')).toBeTruthy();
   });
 });
