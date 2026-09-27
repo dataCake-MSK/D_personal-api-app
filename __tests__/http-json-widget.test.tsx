@@ -1,5 +1,5 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { fireEvent, render, screen } from '@testing-library/react-native';
+import { act, fireEvent, render, screen } from '@testing-library/react-native';
 import type { ReactElement } from 'react';
 
 import { clearWidgetRegistry } from '@/widgets/registry';
@@ -180,5 +180,71 @@ describe('새로고침', () => {
     );
 
     expect(await screen.findByText('방금 갱신')).toBeTruthy();
+  });
+});
+
+describe('자동 갱신', () => {
+  afterEach(() => {
+    jest.useRealTimers();
+  });
+
+  it('주기를 설정하면 그 간격마다 다시 요청한다', async () => {
+    // 주기 타이머는 렌더 시점에 걸리므로 가짜 타이머를 먼저 켠다.
+    jest.useFakeTimers();
+    fetchMock.mockResolvedValue({ ok: true, status: 200, json: async () => ({ v: 1 }) });
+
+    await renderWithQuery(
+      <WidgetCard
+        widget={widget({
+          url: 'https://example.com/data',
+          path: 'v',
+          view: 'text',
+          refreshSeconds: 30,
+        })}
+      />,
+    );
+    await act(async () => {
+      await Promise.resolve();
+    });
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+
+    await act(async () => {
+      jest.advanceTimersByTime(30_000);
+    });
+
+    expect(fetchMock.mock.calls.length).toBeGreaterThan(1);
+  });
+
+  it('주기와 갱신 시각을 카드에 함께 보여준다', async () => {
+    fetchMock.mockResolvedValue({ ok: true, status: 200, json: async () => ({ v: 1 }) });
+
+    await renderWithQuery(
+      <WidgetCard
+        widget={widget({
+          url: 'https://example.com/data',
+          path: 'v',
+          view: 'text',
+          refreshSeconds: 60,
+        })}
+      />,
+    );
+
+    expect(await screen.findByText('방금 갱신 · 1분마다')).toBeTruthy();
+  });
+
+  it('기본값(수동)에서는 시간이 지나도 다시 요청하지 않는다', async () => {
+    fetchMock.mockResolvedValue({ ok: true, status: 200, json: async () => ({ v: 1 }) });
+
+    await renderWithQuery(
+      <WidgetCard widget={widget({ url: 'https://example.com/data', path: 'v', view: 'text' })} />,
+    );
+    expect(await screen.findByText('1')).toBeTruthy();
+
+    jest.useFakeTimers();
+    await act(async () => {
+      jest.advanceTimersByTime(120_000);
+    });
+
+    expect(fetchMock).toHaveBeenCalledTimes(1);
   });
 });

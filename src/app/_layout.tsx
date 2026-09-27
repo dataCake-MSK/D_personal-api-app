@@ -1,9 +1,13 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Stack } from 'expo-router';
 
+import { startAppFocusTracking } from '@/lib/app-focus';
 import { registerBuiltInWidgets } from '@/widgets';
 
 registerBuiltInWidgets();
+
+// 앱이 다시 활성화되면 오래된 데이터를 갱신한다.
+startAppFocusTracking();
 
 const queryClient = new QueryClient({
   defaultOptions: {
