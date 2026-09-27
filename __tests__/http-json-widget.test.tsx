@@ -179,7 +179,7 @@ describe('새로고침', () => {
       <WidgetCard widget={widget({ url: 'https://example.com/data', path: 'v', view: 'text' })} />,
     );
 
-    expect(await screen.findByText('방금 갱신')).toBeTruthy();
+    expect(await screen.findByText('방금 갱신 · 수동')).toBeTruthy();
   });
 });
 
